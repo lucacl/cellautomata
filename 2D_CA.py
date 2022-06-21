@@ -1,6 +1,11 @@
 from CA import CA
 
-class 2D_CA(CA):
+class CA_2D(CA):
+    def __init__(self, m, n, rules, neighbourhood, edge_type = 0):
+        super().__init__(m * n, rules, neighbourhood, edge_type)
+        
+        
+        
     
 '''
 import numpy as np

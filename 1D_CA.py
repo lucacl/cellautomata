@@ -1,4 +1,5 @@
 from CA import CA
+from cell import Cell
 
 class CA_1D(CA):
     
@@ -12,5 +13,7 @@ class CA_1D(CA):
                     elif self.edge_type == "mirror":
                         x = cell
                     elif self.edge_type.isdigit():
-                        x = int(self.edge_type)
+                        x = Cell(int(self.edge_type))
+                else:
+                    x = self.grid[k]
                 cell.neighbourhood.append(x)
