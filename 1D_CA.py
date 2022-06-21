@@ -1,3 +1,5 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from CA import CA
 from cell import Cell
 
@@ -17,3 +19,25 @@ class CA_1D(CA):
                 else:
                     x = self.grid[k]
                 cell.neighbourhood.append(x)
+                
+        
+    def graph(self, steps):
+        data = []
+        for _ in range(steps):
+            data += [[x.state for x in self.grid]]
+            self.step()
+        data = np.array(data)            
+
+        nrows = steps
+        ncols = len(self.grid)
+
+        fig, ax = plt.subplots()
+        ax.imshow(data, cmap="Greens", origin="upper", vmin=0)
+
+        # optionally add grid
+        ax.set_xticks(np.arange(ncols+1)-0.5, minor=True)
+        ax.set_yticks(np.arange(nrows+1)-0.5, minor=True)
+        ax.grid(which="minor")
+        ax.tick_params(which="minor", size=0)
+
+        plt.show()
