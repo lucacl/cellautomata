@@ -8,7 +8,7 @@ class CA_1D(CA):
     def __init__(self, n, rules, neighbourhood, edge_type):
         super().__init__(n, rules, neighbourhood, edge_type)
         
-        self.checkrule()
+        self.checkrules()
     
     def init_neighbours(self):
         for i, cell in enumerate(self.grid):
