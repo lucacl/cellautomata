@@ -1,9 +1,9 @@
 from CA import CA
 
 class CA_2D(CA):
-    def __init__(self, m, n, rules, neighbourhood, edge_type = 0):
-        super().__init__(m * n, rules, neighbourhood, edge_type)
-        
+    def __init__(self, dimensions, rule, states, neighbourhood, edge_type = 0):
+        m, n = dimensions
+        super().__init__(m * n, rule, states, neighbourhood, edge_type)
         
         
     
