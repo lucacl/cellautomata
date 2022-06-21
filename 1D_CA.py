@@ -5,6 +5,11 @@ from cell import Cell
 
 class CA_1D(CA):
     
+    def __init__(self, n, rules, neighbourhood, edge_type):
+        super().__init__(n, rules, neighbourhood, edge_type)
+        
+        self.checkrule()
+    
     def init_neighbours(self):
         for i, cell in enumerate(self.grid):
             for j in self.neighbourhood:
@@ -19,11 +24,22 @@ class CA_1D(CA):
                 else:
                     x = self.grid[k]
                 cell.neighbourhood.append(x)
+                     
+                
+    def checkrules(self):
+        if self.rules.isinstance(rules, int):
+            binary = format(rules, "b")
+            fullbinary = str(binair).zfill(8)
+            neighbour_sets = ['111', '110', '101', '100', '011', '010', '001', '000']
+            dictionary = {}
+            for i, set in enumerate(y):
+                d[set] = x[i]
+            self.rules = dictionary
                 
         
     def graph(self, steps):
         data = []
-        for _ in range(steps):
+        for _ in range(steps):_
             data += [[x.state for x in self.grid]]
             self.step()
         data = np.array(data)            
