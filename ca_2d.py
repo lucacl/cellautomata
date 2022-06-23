@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from CA import CA
+from ca import CA
 from cell import Cell
 
 def moore(r):
@@ -36,28 +36,23 @@ def cross(r):
 
 
 class CA_2D(CA):
-    def __init__(self, dimensions, rule, states, neighbourhood, edge_type = 0):
-        self.dimensions = dimensions
-        m, n = dimensions
-        super().__init__(m * n, rule, states, neighbourhood, edge_type)
-    
-    
-    def init_neighbours(self, neighbourhood, edge_type):
-        '''Generates the neighbourhoods of the cells'''
+   
+    def init_neighbours(self):
+        '''Generates the list of neighbours for each cell'''
         self.grid = np.array(self.grid).reshape(self.dimensions)
         
         for i, row in enumerate(self.grid):
             for j, cell in enumerate(row):
-                for y, x in neighbourhood:
+                for y, x in self.neighbourhood:
                     if i + y < 0 or i + y >= len(self.grid) or j + x < 0 or j + x >= len(row):
-                        if edge_type == "wrap":
+                        if self.edge_type == "wrap":
                             z = self.grid[(i + y) % len(self.grid)][(j + x) % len(row)]
                             
-                        elif edge_type == "mirror":
+                        elif self.edge_type == "mirror":
                             z = cell
                             
-                        elif edge_type.isdigit():
-                            z = Cell(int(edge_type))
+                        elif self.edge_type.isdigit():
+                            z = Cell(int(self.edge_type))
                     else:
                         z = self.grid[i + y][j + x]
                             
@@ -82,22 +77,21 @@ class CA_2D(CA):
             if cell.state == 0:
                 if len(alive) == birth:
                     cell.state = 1
-            elif len(alive) < lower or len(alive) > upper:
+            elif len(alive) - 1 < lower or len(alive) - 1> upper:
                 cell.state = 0
                 
                     
     
     def graph(self):
-        '''ggfgfg '''
+        '''Graphs the current iteration of the CA'''
         data = np.array([x.state for x in self.grid]).reshape(self.dimensions)
-        
          
         fig, ax = plt.subplots()
         ax.imshow(data, cmap="viridis", vmin = 0, vmax = self.states - 1, interpolation = "none")
         
         plt.xticks([])
         plt.yticks([])
-        plt.suptitle(f"Rule {self.rule}")
-        plt.title(f"2D CA with states = {self.states},neighbourhood = {self.neighbourhood}, edge_type = {self.edge_type}")
+        plt.suptitle(f"Rule {self.rule}", fontsize = 10)
+        plt.title(f"2D CA with states = {self.states},neighbourhood = {self.neighbourhood}, edge_type = {self.edge_type}", fontsize = 10)
         
         plt.show()

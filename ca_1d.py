@@ -1,33 +1,41 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from CA import CA
+from ca import CA
 from cell import Cell
 
 class CA_1D(CA):
+    def __init__(self, dimensions, rule, states, neighbourhood, edge_type):
+        if isinstance(dimensions, int):
+            dimensions = (dimensions,)
+        super().__init__(dimensions, rule, states, neighbourhood, edge_type)
+        
     
-    def init_neighbours(self, neighbourhood, edge_type):        
+    def init_neighbours(self):
+        '''Generates the list of neighbours for each cell'''
         for i, cell in enumerate(self.grid):
-            for j in neighbourhood:
+            for j in self.neighbourhood:
                 k = i + j
                 if k < 0 or k >= len(self.grid):
-                    if edge_type == "wrap":
+                    if self.edge_type == "wrap":
                         x = self.grid[k % len(self.grid)]
                         
-                    elif edge_type == "mirror":
+                    elif self.edge_type == "mirror":
                         x = cell
                         
-                    elif edge_type.isdigit():
-                        x = Cell(int(edge_type))
+                    elif self.edge_type.isdigit():
+                        x = Cell(int(self.edge_type))
                 else:
                     x = self.grid[k]
                 cell.neighbourhood.append(x)
                      
     
     def change_cell(self, pos, state):
+        '''Change the state of a cell'''
         self.grid[pos].state = state
         
     
     def graph(self, steps):
+        '''Graphs multiple iterations as a 2D graph'''
         data = []
         for _ in range(steps):
             data += [[x.state for x in self.grid]]
@@ -39,6 +47,7 @@ class CA_1D(CA):
         
         plt.xticks([])
         plt.yticks([])
-        plt.suptitle(f"Rule {self.rule}")
-        plt.title(f"1D CA with {self.states} states and {self.neighbourhood} neighbourhood, edge_type = {self.edge_type}")
+        plt.suptitle(f"Rule {self.rule}", fontsize = 10)
+        plt.title(f"1D CA with {self.states} states and {self.neighbourhood} neighbourhood, edge_type = {self.edge_type}", fontsize = 10)
+        
         plt.show()
