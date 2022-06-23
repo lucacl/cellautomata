@@ -5,7 +5,7 @@ from cell import Cell
 
 class CA_1D(CA):
     
-    def init_neighbours(self, neighbourhood, edge_type):
+    def init_neighbours(self, neighbourhood, edge_type):        
         for i, cell in enumerate(self.grid):
             for j in neighbourhood:
                 k = i + j
@@ -22,7 +22,11 @@ class CA_1D(CA):
                     x = self.grid[k]
                 cell.neighbourhood.append(x)
                      
+    
+    def change_cell(self, pos, state):
+        self.grid[pos].state = state
         
+    
     def graph(self, steps):
         data = []
         for _ in range(steps):
@@ -30,16 +34,11 @@ class CA_1D(CA):
             self.step()
         data = np.array(data)            
 
-        nrows = steps
-        ncols = len(self.grid)
-
         fig, ax = plt.subplots()
-        ax.imshow(data, cmap="Greys", origin="upper", vmin=0)
-
-        # optionally add grid
-        ax.set_xticks(np.arange(ncols+1)-0.5, minor=True)
-        ax.set_yticks(np.arange(nrows+1)-0.5, minor=True)
-        #ax.grid(which="minor")
-        ax.tick_params(which="minor", size=0)
-
+        ax.imshow(data, cmap="viridis", vmin = 0, vmax = self.states - 1, interpolation = "none")
+        
+        plt.xticks([])
+        plt.yticks([])
+        plt.suptitle(f"Rule {self.rule}")
+        plt.title(f"1D CA with {self.states} states and {self.neighbourhood} neighbourhood, edge_type = {self.edge_type}")
         plt.show()
