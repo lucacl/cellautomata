@@ -1,27 +1,21 @@
+import math
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from ca import CA
 from cell import Cell
 
-
-def game_of_life_rule(lower, upper, birth):
-    rule = ""
-    for n in range(2 ** 9):
-        binary = bin(n)[2:].zfill(9)
-        alive = binary[1:].count("1")
-        if binary[0] == '0':
-            if alive == birth:
-                rule += "1"
-            else: rule += "0"
-        elif alive < lower or alive > upper:
-            rule += "0"
-        else: rule += "1"
-    return int(rule[::-1], 2)
-
-
-class CA_2D(CA):
-   
+class Cyclic_CA:     
+    def __init__(self, dimensions: tuple, states: int, neighbourhood: list, edge_type: str):
+        self.dimensions = dimensions
+        self.grid = [Cell(0) for _ in range(math.prod(dimensions))]
+        self.states = states
+        self.neighbourhood = neighbourhood
+        self.edge_type = edge_type
+        
+        self.init_neighbours()
+    
+    
     def init_neighbours(self):
         '''Generates the list of neighbours for each cell'''
         self.grid = np.array(self.grid).reshape(self.dimensions)
@@ -40,17 +34,37 @@ class CA_2D(CA):
                             z = Cell(int(self.edge_type))
                     else:
                         z = self.grid[i + y][j + x]
-                            
                     cell.neighbourhood.append(z)
                         
         self.grid = list(self.grid.reshape(-1))
+    
+    
+    def randomise_grid(self):
+        '''Randomises the state of all cells in the grid'''
+        for cell in self.grid:
+            cell.state = random.randint(0, self.states - 1)
         
         
     def change_cell(self, pos, state):
         '''Change the state of a specified cell'''
         i, j = pos
         self.grid[i*self.dimensions[1] + j].state = state
-
+            
+    
+    def step(self, threshold = 1):
+        for cell in self.grid:
+            cell.old_state = cell.state
+            
+        for cell in self.grid:
+            if [x.old_state for x in cell.neighbourhood].count((cell.state + 1) % self.states) >= threshold:
+                cell.state = (cell.state + 1) % self.states
+    
+    
+    def run(self, steps):
+        '''Iterates the CA multiple times'''
+        for _ in range(steps):
+            self.step()      
+    
     
     def graph(self):
         '''Graphs the current iteration of the CA'''
@@ -61,13 +75,11 @@ class CA_2D(CA):
         
         plt.xticks([])
         plt.yticks([])
-        plt.suptitle(f"Rule {self.rule}", fontsize = 10)
         plt.title(f"2D CA with states = {self.states},neighbourhood = {self.neighbourhood}, edge_type = {self.edge_type}", fontsize = 10)
         
         plt.show()
 
         
-    
     def anim_graph(self, steps):
         fig, ax = plt.subplots()
         

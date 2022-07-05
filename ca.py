@@ -8,12 +8,12 @@ def number_to_base(n, b):
     while n:
         digits.append(n % b)
         n //= b
-    return digits
+    return digits[::-1]
 
 def base_to_number(digits, b):
     '''Takes a list of integers and a base, and returns a decimal integer number'''
     n = 0
-    for i, x in enumerate(digits):
+    for i, x in enumerate(digits[::-1]):
          n += x * (b ** i)
     return n
 
@@ -41,16 +41,6 @@ class CA:
             self.rule_base = number_to_base(rule, states)
             
         self.init_neighbours()
-        
-        
-    def init_neighbours(self):
-        '''Initialises the neighbours of all cells in the grid'''
-        pass
-    
-    
-    def change_cell(self, pos, state):
-        '''Change the state of a cell'''
-        pass
     
     
     def randomise_grid(self):
@@ -65,6 +55,45 @@ class CA:
         self.rule_base = number_to_base(self.rule, self.states)
     
     
+    def cyclic_totalistic_rule(self, lower, upper, birth):
+        rule = []
+        for n in range(self.states ** len(self.neighbourhood)):
+            
+            n_base = number_to_base(n, self.states)
+            while len(n_base) < len(self.neighbourhood): n_base = [0] + n_base
+            
+            alive = len(self.neighbourhood) - 1 - n_base[1:].count(0)
+            if n_base[0] == 0:
+                if alive == birth:
+                    rule += [1]
+                else: rule += [0]
+            elif alive < lower or alive > upper:
+                rule += [0]
+            else: rule += [n_base[0] % (self.states - 1) + 1]
+        return base_to_number(rule[::-1], self.states)            
+    
+    
+    def cyclic_rule(self, threshold = 1):
+        rule = []
+        for n in range(self.states ** len(self.neighbourhood)):
+            n_base = number_to_base(n, self.states)
+            while len(n_base) < len(self.neighbourhood): n_base = [0] + n_base
+            
+            if n_base.count((n_base[0] + 1) % self.states) >= threshold:
+                rule.append((n_base[0] + 1) % self.states)
+            else: rule.append(n_base[0])
+        return base_to_number(rule[::-1], self.states)
+    
+    
+    def cyclic_step(self, threshold = 1):
+        for cell in self.grid:
+            cell.old_state = cell.state
+            
+        for cell in self.grid:
+            if [x.old_state for x in self.grid].count((cell.state + 1) % self.states) >= threshold:
+                cell.state = (cell.state + 1) % self.states
+    
+    
     def step(self):
         '''Generates the next iteration of the CA'''
         for cell in self.grid:
@@ -75,13 +104,24 @@ class CA:
             if i >= len(self.rule_base):
                 cell.state = 0
             else:
-                cell.state = self.rule_base[i]
+                cell.state = self.rule_base[~i]
     
     
     def run(self, steps):
         '''Iterates the CA multiple times'''
         for _ in range(steps):
-            self.step()        
+            self.step()      
+            
+            
+    #not implemented:
+            
+    def init_neighbours(self):
+        '''Initialises the neighbours of all cells in the grid'''
+        pass
+    
+    def change_cell(self, pos, state):
+        '''Change the state of a cell'''
+        pass
             
     def graph(self):
         '''Graphs the current iteration of the CA'''
